@@ -1,4 +1,6 @@
 {
   "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
-  "C_Cpp.intelliSenseEngine": "default"
+  "C_Cpp.intelliSenseEngine": "disabled",
+  // "clangd.arguments": ["--query-driver=**"]
+  "clangd.arguments": ["--query-driver=**"]
 }

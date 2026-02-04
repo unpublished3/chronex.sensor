@@ -9,7 +9,7 @@ NimBLECharacteristic* setupBluetooth(NimBLEServer*);
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(115200);
   NimBLEDevice::init("Chronex");
 
   NimBLEServer *pServer = NimBLEDevice::createServer();
