@@ -3,6 +3,8 @@ CompileFlags:
     - -ferror-limit=0
     - -I/Users/sakshyam/Code/chronex.sensor/include
     - -I/Users/sakshyam/Code/chronex.sensor/src
+    - -I/Users/sakshyam/Code/chronex.sensor/.pio/libdeps/esp32dev/SparkFun MAX3010x Pulse and Proximity Sensor Library/src
+    - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src
     - -I/Users/sakshyam/Code/chronex.sensor/.pio/libdeps/esp32dev/NimBLE-Arduino/src
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/freertos/include
@@ -201,6 +203,8 @@ CompileFlags:
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/cores/esp32
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/variants/esp32
     - -I/Users/sakshyam/Code/chronex.sensor/.pio/libdeps/esp32dev/NimBLE-Arduino/src
+    - -I/Users/sakshyam/Code/chronex.sensor/.pio/libdeps/esp32dev/SparkFun MAX3010x Pulse and Proximity Sensor Library/src
+    - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/ArduinoOTA/src
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/AsyncUDP/src
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/BLE/src
@@ -233,7 +237,6 @@ CompileFlags:
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiClientSecure/src
     - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/WiFiProv/src
-    - -I/Users/sakshyam/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src
 
 Diagnostics:
   Suppress:
