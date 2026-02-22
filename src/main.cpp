@@ -11,6 +11,8 @@
 BluetoothService ble;
 PulseSensor sensor;
 
+    MAX30105 sensors;
+
 // put function declarations here:
 void setup() {
   // put your setup code here, to run once:
@@ -18,6 +20,7 @@ void setup() {
 
   // Pulse Sensor
   sensor.begin(33, 32);
+  sensors.readTemperature();
 
   // Ble
   ble.begin("Chronex", BluetoothUuids::SERVICE);

@@ -1,4 +1,5 @@
 #include "PulseSensor.h"
+#include "MAX30105.h"
 
 bool PulseSensor::begin(int sda, int scl) {
   Wire.begin(sda, scl);
@@ -8,6 +9,7 @@ bool PulseSensor::begin(int sda, int scl) {
   }
 
   sensor.setup(60, 4, 2, 100, 411, 4096);
+  sensor.enableDIETEMPRDY();
   return true;
 }
 
@@ -16,3 +18,5 @@ void PulseSensor::update() { sensor.check(); }
 long PulseSensor::getIR() { return sensor.getIR(); }
 
 long PulseSensor::getRed() { return sensor.getRed(); }
+
+float PulseSensor::getTemperature() { return sensor.readTemperature(); }

@@ -1,5 +1,4 @@
 #pragma once
-// #include <Wire.h>
 #include "MAX30105.h"
 
 class PulseSensor {
@@ -8,6 +7,7 @@ public:
     void update();
     long getIR();
     long getRed();
+    float getTemperature();
 
 private:
     MAX30105 sensor;
