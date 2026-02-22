@@ -8,28 +8,27 @@
 #include <Wire.h>
 
 // data
-// NimBLECharacteristic *serialChar;
-// MAX30105 particleSensor;
 BluetoothService ble;
 PulseSensor sensor;
 
 // put function declarations here:
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+
+  // Pulse Sensor
   sensor.begin(33, 32);
+
+  // Ble
   ble.begin("Chronex", BluetoothUuids::SERVICE);
-  ble.createCharacteristic(BluetoothUuids::SERIALU,
+  ble.createCharacteristic(BluetoothUuids::HEART,
                            NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+  ble.startAdvertising("Chronex", BluetoothUuids::SERVICE);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // while (sensor.) {
-  
-  // }
-  ble.sendUInt32(BluetoothUuids::SERIALU, sensor.getIR());
+  ble.sendUInt32(BluetoothUuids::HEART, sensor.getIR());
   delay(1000);
 }
 
