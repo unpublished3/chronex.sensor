@@ -34,7 +34,6 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   if (sensor.readSample(ir, red)) {
-
     if (heartRateProcessor.update(ir)) {
       float hr = heartRateProcessor.getBpm();
       Serial.write("BPM: ");
@@ -42,7 +41,6 @@ void loop() {
       ble.sendUInt32(BluetoothUuids::HEART, hr);
     }
   }
-  delay(1000);
 }
 
 // put function definitions here:
