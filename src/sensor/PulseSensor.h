@@ -4,9 +4,7 @@
 class PulseSensor {
 public:
     bool begin(int sda, int scl);
-    void update();
-    long getIR();
-    long getRed();
+    bool readSample(uint32_t& ir, uint32_t& red);
     float getTemperature();
 
 private:

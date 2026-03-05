@@ -1,26 +1,28 @@
+#include "HardwareSerial.h"
 #include "MAX30105.h"
 #include "bluetooth/BluetoothService.h"
 #include "bluetooth/BluetoothUuids.h"
 #include "esp32-hal.h"
+#include "processor/HeartRateProcessor.h"
 #include "sensor/PulseSensor.h"
 #include <Arduino.h>
 #include <NimBLEDevice.h>
 #include <Wire.h>
+#include <cstdint>
 
 // data
 BluetoothService ble;
 PulseSensor sensor;
+HeartRateProcessor heartRateProcessor;
 
-    MAX30105 sensors;
+uint32_t ir, red;
 
 // put function declarations here:
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-
   // Pulse Sensor
   sensor.begin(33, 32);
-  sensors.readTemperature();
 
   // Ble
   ble.begin("Chronex", BluetoothUuids::SERVICE);
@@ -31,7 +33,15 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  ble.sendUInt32(BluetoothUuids::HEART, sensor.getIR());
+  if (sensor.readSample(ir, red)) {
+
+    if (heartRateProcessor.update(ir)) {
+      float hr = heartRateProcessor.getBpm();
+      Serial.write("BPM: ");
+      Serial.write((uint32_t)hr);
+      ble.sendUInt32(BluetoothUuids::HEART, hr);
+    }
+  }
   delay(1000);
 }
 

@@ -13,10 +13,16 @@ bool PulseSensor::begin(int sda, int scl) {
   return true;
 }
 
-void PulseSensor::update() { sensor.check(); }
+bool PulseSensor::readSample(uint32_t &ir, uint32_t &red) {
+  sensor.check();
+  if (!sensor.available())
+    return false;
 
-long PulseSensor::getIR() { return sensor.getIR(); }
+  ir = sensor.getIR();
+  red = sensor.getRed();
 
-long PulseSensor::getRed() { return sensor.getRed(); }
+  sensor.nextSample();
+  return true;
+}
 
 float PulseSensor::getTemperature() { return sensor.readTemperature(); }
