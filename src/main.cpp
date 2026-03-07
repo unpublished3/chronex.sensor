@@ -36,8 +36,14 @@ void setup() {
     while (1)
       ;
   }
-  sensor.sensorConfiguration(60, 2, 7, 3, 3, 1);
-
+  sensor.sensorConfiguration(
+      0x1F, 
+      SAMPLEAVG_16,
+      MODE_MULTILED,  
+      SAMPLERATE_1600,
+      PULSEWIDTH_411, 
+      ADCRANGE_4096
+  );
   // Ble
   // ble.begin("Chronex", BluetoothUuids::SERVICE);
   // ble.createCharacteristic(BluetoothUuids::HEART,
