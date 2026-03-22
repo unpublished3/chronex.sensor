@@ -11,6 +11,11 @@
 #include <Wire.h>
 #include <cstdint>
 
+#define RATE_SIZE 8
+int32_t hrBuffer[RATE_SIZE];
+int bufferIndex = 0;
+int validCount = 0;
+
 // data
 // BluetoothService ble;
 // PulseSensor sensor;
@@ -36,14 +41,8 @@ void setup() {
     while (1)
       ;
   }
-  sensor.sensorConfiguration(
-      0x1F, 
-      SAMPLEAVG_16,
-      MODE_MULTILED,  
-      SAMPLERATE_1600,
-      PULSEWIDTH_411, 
-      ADCRANGE_4096
-  );
+  sensor.sensorConfiguration(0x1F, SAMPLEAVG_16, MODE_MULTILED, SAMPLERATE_3200,
+                             PULSEWIDTH_411, ADCRANGE_4096);
   // Ble
   // ble.begin("Chronex", BluetoothUuids::SERVICE);
   // ble.createCharacteristic(BluetoothUuids::HEART,
@@ -53,27 +52,32 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // if (sensor.readSample(ir, red)) {
-  //   Serial.print("Ir: ");
-  //   Serial.print(ir);
-  //   Serial.print("\n");
-  //   if (heartRateProcessor.update(ir)) {
-  //     float hr = heartRateProcessor.getBpm();
-  //     Serial.print("BPM: ");
-  //     Serial.print((uint32_t)hr);
-  //     ble.sendUInt32(BluetoothUuids::HEART, hr);
-  //   }
-  // }
+
   sensor.heartrateAndOxygenSaturation(&spo2, &spo2valid, &hr, &hrvalid);
-  Serial.print("Hr: ");
-  Serial.print(hr);
-  Serial.print("\tSpo2:");
-  Serial.print(spo2);
-  Serial.print("\tValidHr:");
-  Serial.print(hrvalid);
-  Serial.print("\tValidSpo2:");
-  Serial.print(spo2valid);
-  Serial.print("\n");
+  // Serial.print(hr);
+  if (hrvalid) {
+    hrBuffer[bufferIndex++] = hr;
+    Serial.println(hr);
+    Serial.println(bufferIndex);
+    Serial.println(validCount);
+    bufferIndex %= RATE_SIZE;
+    if (validCount < RATE_SIZE)
+      validCount++; // only increment until full
+
+    // Only average once we have enough samples
+    if (validCount >= 4) { // wait for at least 4 readings
+      int32_t sum = 0;
+      for (int i = 0; i < validCount; i++)
+        sum += hrBuffer[i];
+      int32_t smoothHr = sum / validCount;
+      Serial.println(smoothHr);
+    } else {
+      Serial.println("Collecting samples...");
+    }
+  } else {
+    Serial.println("\nRejected value");
+  }
+
 }
 
 // put function definitions here:
