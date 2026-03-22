@@ -45,7 +45,7 @@ void loop() {
   if (heartRateService.update()) {
     int32_t hr = heartRateService.getHr();
     Serial.println(hr);
-    ble.sendUInt32(BluetoothUuids::HEART, hr);
+    ble.sendHeartRate(BluetoothUuids::HEART, hr);
   }
 }
 

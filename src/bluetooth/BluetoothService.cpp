@@ -34,3 +34,12 @@ void BluetoothService::startAdvertising(const char *name, const char *uuid) {
   advertising->setName(name);
   advertising->start();
 }
+
+void BluetoothService::sendHeartRate(const char *uuid, uint8_t hr) {
+  auto it = _characteristics.find(uuid);
+  if (it != _characteristics.end()) {
+    uint8_t data[2] = {0x00, hr};
+    it->second->setValue(data, 2);
+    it->second->notify();
+  }
+}

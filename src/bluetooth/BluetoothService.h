@@ -13,6 +13,8 @@ public:
 
   void sendUInt32(const char *uuid, uint32_t value);
 
+  void sendHeartRate(const char *uuid, uint8_t hr);
+
 private:
   NimBLEService *_service = nullptr;
 
