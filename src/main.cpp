@@ -10,11 +10,6 @@
 #include <Wire.h>
 #include <cstdint>
 
-#define RATE_SIZE 8
-int32_t hrBuffer[RATE_SIZE];
-int bufferIndex = 0;
-int validCount = 0;
-
 // data
 BluetoothService ble;
 HeartRateService heartRateService;
