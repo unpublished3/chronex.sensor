@@ -4,17 +4,19 @@
 
 class BluetoothService {
 public:
-    void begin(const char* name, const char* serviceUuid);
+  void begin(const char *name, const char *serviceUuid);
 
-    NimBLECharacteristic* createCharacteristic(
-        const char* uuid,
-        uint32_t properties
-    );
+  NimBLECharacteristic *createCharacteristic(const char *uuid,
+                                             uint32_t properties);
 
-    void sendUInt32(const char* uuid, uint32_t value);
+  void startAdvertising(const char* name, const char *serviceUuid);
+
+  void sendUInt32(const char *uuid, uint32_t value);
+
+  void sendHeartRate(const char *uuid, uint8_t hr);
 
 private:
-    NimBLEService* _service = nullptr;
+  NimBLEService *_service = nullptr;
 
-    std::map<std::string, NimBLECharacteristic*> _characteristics;
+  std::map<std::string, NimBLECharacteristic *> _characteristics;
 };
