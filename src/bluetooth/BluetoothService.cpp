@@ -1,7 +1,9 @@
 #include "BluetoothService.h"
+#include "NimBLEDevice.h"
 
 void BluetoothService::begin(const char *name, const char *serviceUuid) {
   NimBLEDevice::init(name);
+  NimBLEDevice::setDeviceName(name);
 
   NimBLEServer *server = NimBLEDevice::createServer();
   _service = server->createService(serviceUuid);
@@ -28,10 +30,10 @@ void BluetoothService::sendUInt32(const char *uuid, uint32_t value) {
 
 void BluetoothService::startAdvertising(const char *name, const char *uuid) {
   _service->start();
-
   NimBLEAdvertising *advertising = NimBLEDevice::getAdvertising();
   advertising->addServiceUUID(uuid);
   advertising->setName(name);
+  advertising->enableScanResponse(true);
   advertising->start();
 }
 
