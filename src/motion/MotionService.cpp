@@ -1,7 +1,9 @@
 #ifndef MOTION_SERVICE_H
 #define MOTION_SERVICE_H
+#include "esp32-hal.h"
 #include <Adafruit_MPU6050.h>
 #include <Wire.h>
+#include <cstdint>
 #include <math.h>
 
 class MotionService {
@@ -10,6 +12,10 @@ private:
   const uint8_t _addr = 0x68;
 
   int _stepCount = 0;
+  int _cadence = 0;
+  float _mag = 0;
+
+  uint8_t _millisAtPrevStep = 0;
   float _threshold = 12.0f;
   float _lastMag = 0;
   bool _peakDetected = false;
@@ -25,21 +31,32 @@ public:
     return true;
   }
 
-  float getMagnitude() {
-    sensors_event_t a, g, temp;
-    _mpu.getEvent(&a, &g, &temp);
-    return sqrt(sq(a.acceleration.x) + sq(a.acceleration.y) +
-                sq(a.acceleration.z));
-  }
+  float getMagnitude() { return _mag; }
 
   bool update() {
-    float mag = getMagnitude();
+    sensors_event_t a, g, temp;
+    _mpu.getEvent(&a, &g, &temp);
+    float mag = sqrt(sq(a.acceleration.x) + sq(a.acceleration.y) +
+                     sq(a.acceleration.z));
+    _lastMag = mag;
+
     bool stepped = false;
 
     if (mag > _threshold && !_peakDetected) {
       _peakDetected = true;
       _stepCount++;
       stepped = true;
+      if (_millisAtPrevStep != 0) {
+        int diff = millis() - _millisAtPrevStep;
+        float instantCadence = 60000.0f / diff;
+
+        _cadence = (_cadence * 0.7f) + (instantCadence * 0.3f);
+        if (diff > 3000) {
+          _cadence = 0;
+        }
+      }
+
+      _millisAtPrevStep = millis();
     } else if (mag < _threshold - 2.0f) {
       _peakDetected = false;
     }
@@ -49,6 +66,7 @@ public:
   }
 
   int getStepCount() { return _stepCount; }
+  int getCadence() { return _millisAtPrevStep; }
   void resetSteps() { _stepCount = 0; }
 
   void getAcceleration(float &x, float &y, float &z) {
