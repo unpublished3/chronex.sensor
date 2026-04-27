@@ -11,9 +11,6 @@
 #include <Wire.h>
 #include <cstdint>
 
-#include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
-
 // data
 BluetoothService ble;
 HeartRateService heartRateService;
@@ -27,9 +24,16 @@ void setup() {
   delay(2000);
   Wire.begin(33, 32);
 
-  // Sensors
-  if (!heartRateService.begin() && !motionService.begin()) {
-    Serial.println("Sensor not found!");
+  // Sensor Initialization
+  if (!heartRateService.begin()) {
+    Serial.println("Hr sensor not found!");
+    ;
+    while (1)
+      ;
+  }
+
+  if (!motionService.begin()) {
+    Serial.println("Motion sensor not found!");
     ;
     while (1)
       ;
@@ -44,12 +48,16 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // Serial.print(motionService.getMagnitude());
-  // if (heartRateService.update()) {
-  //   int32_t hr = heartRateService.getHr();
-  //   Serial.println(hr);
-  //   ble.sendHeartRate(BluetoothUuids::HEART, hr);
-  // }
+  if (motionService.update()) {
+    int32_t stepCount = motionService.getStepCount();
+    Serial.println(stepCount);
+  }
+
+  if (heartRateService.update()) {
+    int32_t hr = heartRateService.getHr();
+    Serial.println(hr);
+    ble.sendHeartRate(BluetoothUuids::HEART, hr);
+  }
 }
 
 // put function definitions here:
