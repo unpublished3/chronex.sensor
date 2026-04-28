@@ -1,6 +1,5 @@
-#ifndef MOTION_SERVICE_H
-#define MOTION_SERVICE_H
-#include "esp32-hal.h"
+#pragma once
+
 #include <Adafruit_MPU6050.h>
 #include <Wire.h>
 #include <cstdint>
@@ -12,7 +11,7 @@ private:
   const uint8_t _addr = 0x68;
 
   int _stepCount = 0;
-  int _cadence = 0;
+  float _cadence = 0;
   float _mag = 0;
 
   uint8_t _millisAtPrevStep = 0;
@@ -36,32 +35,39 @@ public:
   bool update() {
     sensors_event_t a, g, temp;
     _mpu.getEvent(&a, &g, &temp);
+
     float mag = sqrt(sq(a.acceleration.x) + sq(a.acceleration.y) +
                      sq(a.acceleration.z));
-    _lastMag = mag;
-
     bool stepped = false;
 
+    // 1. Step Detection
     if (mag > _threshold && !_peakDetected) {
       _peakDetected = true;
       _stepCount++;
       stepped = true;
-      if (_millisAtPrevStep != 0) {
-        int diff = millis() - _millisAtPrevStep;
-        float instantCadence = 60000.0f / diff;
 
-        _cadence = (_cadence * 0.7f) + (instantCadence * 0.3f);
-        if (diff > 3000) {
-          _cadence = 0;
+      if (_millisAtPrevStep != 0) {
+        uint32_t diff = millis() - _millisAtPrevStep;
+        // Only calculate if the step is physically possible (e.g. > 200ms)
+        if (diff > 200 && diff < 3000) {
+          float instantCadence = 60000.0f / diff;
+          _cadence = (_cadence * 0.7f) + (instantCadence * 0.3f);
         }
       }
-
       _millisAtPrevStep = millis();
-    } else if (mag < _threshold - 2.0f) {
+    }
+
+    // 2. Reset Peak Detection (Hysteresis)
+    // Bring this up slightly to ensure it resets even with noise
+    if (mag < _threshold - 1.0f) {
       _peakDetected = false;
     }
 
-    _lastMag = mag;
+    // 3. Independent Timeout (Place this OUTSIDE the step detection)
+    if (millis() - _millisAtPrevStep > 2500) {
+      _cadence = 0.0f;
+    }
+
     return stepped;
   }
 
@@ -77,4 +83,3 @@ public:
     z = a.acceleration.z;
   }
 };
-#endif

@@ -1,5 +1,8 @@
 #include "BluetoothService.h"
+#include "../SharedTypes.h"
+#include "NimBLECharacteristic.h"
 #include "NimBLEDevice.h"
+#include <cstdint>
 
 void BluetoothService::begin(const char *name, const char *serviceUuid) {
   NimBLEDevice::init(name);
@@ -42,6 +45,16 @@ void BluetoothService::sendHeartRate(const char *uuid, uint8_t hr) {
   if (it != _characteristics.end()) {
     uint8_t data[2] = {0x00, hr};
     it->second->setValue(data, 2);
+    it->second->notify();
+  }
+}
+
+void BluetoothService::sendMotionData(const char *uuid, uint32_t steps,
+                                      float cadence) {
+  auto it = _characteristics.find(uuid);
+  if (it != _characteristics.end()) {
+    MotionData data = {steps, cadence};
+    it->second->setValue((uint8_t *)&data, sizeof(data));
     it->second->notify();
   }
 }

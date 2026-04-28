@@ -1,6 +1,7 @@
 #include "DFRobot_MAX30102.h"
 #include "HardwareSerial.h"
 #include "MAX30105.h"
+#include "NimBLELocalValueAttribute.h"
 #include "bluetooth/BluetoothService.h"
 #include "bluetooth/BluetoothUuids.h"
 #include "esp32-hal.h"
@@ -43,14 +44,14 @@ void setup() {
   ble.begin("Chronex", BluetoothUuids::SERVICE);
   ble.createCharacteristic(BluetoothUuids::HEART,
                            NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+  ble.createCharacteristic(BluetoothUuids::MOTION, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
   ble.startAdvertising("Chronex", BluetoothUuids::SERVICE);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   if (motionService.update()) {
-    int32_t stepCount = motionService.getStepCount();
-    Serial.println(stepCount);
+    ble.sendMotionData(BluetoothUuids::MOTION, motionService.getStepCount(), motionService.getCadence());
   }
 
   if (heartRateService.update()) {
