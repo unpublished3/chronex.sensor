@@ -58,3 +58,17 @@ void BluetoothService::sendMotionData(const char *uuid, uint32_t steps,
     it->second->notify();
   }
 }
+
+void BluetoothService::sendFloat(const char* uuid, float value) {
+    auto it = _characteristics.find(uuid);
+    if (it != _characteristics.end()) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%.2f", value);
+        Serial.print("Sending: ");  // add this
+        Serial.println(buf);        // add this
+        it->second->setValue((uint8_t*)buf, strlen(buf));
+        it->second->notify();
+    } else {
+        Serial.println("UUID not found!");  // add this
+    }
+}

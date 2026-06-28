@@ -44,14 +44,25 @@ void setup() {
   ble.begin("Chronex", BluetoothUuids::SERVICE);
   ble.createCharacteristic(BluetoothUuids::HEART,
                            NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-  ble.createCharacteristic(BluetoothUuids::MOTION, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+  ble.createCharacteristic(BluetoothUuids::MOTION,
+                           NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+  ble.createCharacteristic(BluetoothUuids::MAG,
+                           NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+
   ble.startAdvertising("Chronex", BluetoothUuids::SERVICE);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   if (motionService.update()) {
-    ble.sendMotionData(BluetoothUuids::MOTION, motionService.getStepCount(), motionService.getCadence());
+    // ble.sendMotionData(BluetoothUuids::MOTION, motionService.getStepCount(),
+    // motionService.getCadence());
+  }
+
+  static uint32_t lastSend = 0;
+  if (millis() - lastSend > 200) {
+    ble.sendUInt32(BluetoothUuids::MOTION, motionService.getMagnitude());
+    lastSend = millis();
   }
 
   if (heartRateService.update()) {

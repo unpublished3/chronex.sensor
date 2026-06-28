@@ -6,4 +6,6 @@ namespace BluetoothUuids {
     static const char* HEART = "22222222-2222-2222-2222-222222222222";
 
     static const char* MOTION = "4ccdb6a7-78bc-41d2-9562-b2586d2b4aab";
+
+    static const char* MAG = "44444444-4444-4444-4444-444444444444";
 }

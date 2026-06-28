@@ -15,7 +15,7 @@ private:
   float _mag = 0;
 
   uint8_t _millisAtPrevStep = 0;
-  float _threshold = 12.0f;
+  float _threshold = 11.2f;
   float _lastMag = 0;
   bool _peakDetected = false;
 
@@ -24,7 +24,7 @@ public:
     if (!_mpu.begin(_addr, &Wire)) {
       return false;
     }
-    _mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+    _mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
     _mpu.setGyroRange(MPU6050_RANGE_500_DEG);
     _mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
     return true;
@@ -38,9 +38,10 @@ public:
 
     float mag = sqrt(sq(a.acceleration.x) + sq(a.acceleration.y) +
                      sq(a.acceleration.z));
+    Serial.println(mag);
+    _mag = mag;
     bool stepped = false;
 
-    // 1. Step Detection
     if (mag > _threshold && !_peakDetected) {
       _peakDetected = true;
       _stepCount++;
@@ -48,7 +49,6 @@ public:
 
       if (_millisAtPrevStep != 0) {
         uint32_t diff = millis() - _millisAtPrevStep;
-        // Only calculate if the step is physically possible (e.g. > 200ms)
         if (diff > 200 && diff < 3000) {
           float instantCadence = 60000.0f / diff;
           _cadence = (_cadence * 0.7f) + (instantCadence * 0.3f);
@@ -57,13 +57,11 @@ public:
       _millisAtPrevStep = millis();
     }
 
-    // 2. Reset Peak Detection (Hysteresis)
-    // Bring this up slightly to ensure it resets even with noise
+
     if (mag < _threshold - 1.0f) {
       _peakDetected = false;
     }
 
-    // 3. Independent Timeout (Place this OUTSIDE the step detection)
     if (millis() - _millisAtPrevStep > 2500) {
       _cadence = 0.0f;
     }
