@@ -2,8 +2,7 @@
 #include "DFRobot_MAX30102.h"
 #include "esp32-hal.h"
 
-bool HeartRateService::begin(int sda, int scl) {
-  Wire.begin(sda, scl);
+bool HeartRateService::begin() {
   if (!_sensor.begin(&Wire)) {
     return false;
   }

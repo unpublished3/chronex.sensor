@@ -1,5 +1,6 @@
 #pragma once
 #include <NimBLEDevice.h>
+#include <cstdint>
 #include <map>
 
 class BluetoothService {
@@ -15,6 +16,10 @@ public:
 
   void sendHeartRate(const char *uuid, uint8_t hr);
 
+  void sendMotionData(const char *uuid, uint32_t steps, float cadence);
+
+  void sendFloat(const char* uuid, float value);
+  
 private:
   NimBLEService *_service = nullptr;
 

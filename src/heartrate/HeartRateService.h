@@ -6,7 +6,7 @@
 
 class HeartRateService {
 public:
-    bool begin(int sda, int scl);
+    bool begin();
     bool update();
     int32_t getHr();
     int32_t getSpo2();

@@ -1,5 +1,8 @@
 #include "BluetoothService.h"
+#include "../SharedTypes.h"
+#include "NimBLECharacteristic.h"
 #include "NimBLEDevice.h"
+#include <cstdint>
 
 void BluetoothService::begin(const char *name, const char *serviceUuid) {
   NimBLEDevice::init(name);
@@ -44,4 +47,28 @@ void BluetoothService::sendHeartRate(const char *uuid, uint8_t hr) {
     it->second->setValue(data, 2);
     it->second->notify();
   }
+}
+
+void BluetoothService::sendMotionData(const char *uuid, uint32_t steps,
+                                      float cadence) {
+  auto it = _characteristics.find(uuid);
+  if (it != _characteristics.end()) {
+    MotionData data = {steps, cadence};
+    it->second->setValue((uint8_t *)&data, sizeof(data));
+    it->second->notify();
+  }
+}
+
+void BluetoothService::sendFloat(const char* uuid, float value) {
+    auto it = _characteristics.find(uuid);
+    if (it != _characteristics.end()) {
+        char buf[16];
+        snprintf(buf, sizeof(buf), "%.2f", value);
+        Serial.print("Sending: ");  // add this
+        Serial.println(buf);        // add this
+        it->second->setValue((uint8_t*)buf, strlen(buf));
+        it->second->notify();
+    } else {
+        Serial.println("UUID not found!");  // add this
+    }
 }
